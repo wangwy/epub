@@ -14,7 +14,16 @@ FP.Book = function (elem, bookUrl) {
   this.createEvent("book:spineReady");
   this.createEvent("book:bookReady");
   this.createEvent("book:chapterReady");
+  this.createEvent("book:chapterDisplayed");
   this.createEvent("book:resized");
+
+  //-- All hooks to add functions (with a callback) to
+  this.hooks = {
+    "beforeChapterDisplay" : []
+  };
+
+  //-- Get pre-registered hooks
+  this.getHooks();
 
   this.initialize(this.el);
   this.listeners();
@@ -346,5 +355,61 @@ FP.Book.prototype.preloadNextChapter = function () {
       path = this.spine[next].href;
 
   file = FP.storage.preload(path);
+}
+
+//-- Get pre-registered hooks
+FP.Book.prototype.getHooks = function(){
+  var that = this;
+
+  plugTypes = FP.core.toArray(this.hooks);
+
+  plugTypes.forEach(function(plug){
+    var type = plug.ident;
+    plugs = FP.core.toArray(FP.Hooks[type]);
+    plugs.forEach(function(hook){
+      that.registerHook(type, hook);
+    });
+  });
+}
+
+//-- Hooks allow for injecting async functions that must all complete before continuing
+//   Functions must have a callback as their first argument.
+FP.Book.prototype.registerHook = function(type, toAdd){
+  var that = this;
+
+  if(typeof(this.hooks[type]) != "undefined"){
+
+    if(typeof(toAdd) === "function"){
+      this.hooks[type].push(toAdd);
+    }else if(Array.isArray(toAdd)){
+      toAdd.forEach(function(hook){
+        that.hooks[type].push(hook);
+      });
+    }
+
+
+  }else{
+    //-- Allows for undefined hooks, but maybe this should error?
+    this.hooks[type] = [func];
+  }
+}
+
+FP.Book.prototype.triggerHooks = function(type, callback, passed){
+  var hooks, count;
+
+  if(typeof(this.hooks[type]) == "undefined") return false;
+
+  hooks = this.hooks[type];
+
+  count = hooks.length;
+
+  function countdown(){
+    count--;
+    if(count <= 0 && callback) callback();
+  }
+
+  hooks.forEach(function(hook){
+    hook(countdown, passed);
+  });
 }
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="js/libs/jquery-1.8.2.min.js"></script>
+    <script src="js/libs/annotator-full.js"></script>
+    <script src="js/libs/annotator/lib/plugin/auth.js"></script>
+    <script src="js/libs/annotator/lib/plugin/store.js"></script>
+    <link rel="stylesheet" href="css/annotator.css">
+
+    <script>
+        jQuery(function ($) {
+            var content = $('body').annotator();
+/*
+            content.annotator('addPlugin', 'Auth', {
+                autoFetch: false
+            });*/
+            content.annotator('addPlugin', 'Store', {
+                urls: {
+                    // These are the default URLs.
+                    create:  '/annotations',
+                    update:  '/annotations/:id',
+                    destroy: '/annotations/:id',
+                    search:  '/search'
+                },
+                annotationData: {
+                    'uri': 'test.html',
+                    'username': 'wangwy'
+                },
+                loadFromSearch: {
+                    'limit': 20,
+                    'username': 'wangwy',
+                    'uri': 'test.html'
+                }
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+<p>asdfdasdfasdf</p>
+
+<p>fdsafsad</p>
+
+<p>dsfsa</p>
+
+<p>fasdf</p>
+
+<p>fasdf</p>
+
+<p>asfd</p>
+
+<p>dfas</p>
+
+<p>dfsafd</p>
+
+<p>fdsa</p>
+
+<p>fdsafda</p>
+</body>
+</html>
